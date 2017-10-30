@@ -1,0 +1,7 @@
+file MO2i.template
+{
+	pattern
+	{  PRIM,   LOCA,       UNIT,      SCAN,        PORT    }
+	{ "ODH", "$(LOCA)", "$(UNIT)", ".5 second",  "$(PORT)" }
+}
+

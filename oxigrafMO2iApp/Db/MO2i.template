@@ -1,0 +1,395 @@
+# Required Macros:
+#   DEVICE or PRIM, LOCA, UNIT.
+#       EPICS prefix. Every PV for this device starts with this prefix.
+#       DEVICE can be used to define a free format prefix. If you want to stay
+#       with LCLS II naming conventions you can use PRIM as the Device Type,
+#       LOCA, as the Area, and UNIT as the numeric position inside area.   
+#   SCAN
+#       Rate at which to query often changing values such as
+#       current measurement, status, statistics, etc.
+#   PORT
+#   	Name of the Asyn port used to connect to the equipment.
+
+
+# Read 2 bytes containing 15 system status
+record(mbbiDirect, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus")
+{
+        field(DESC, "Read system status bytes")
+        field(INP, "@MO2i.proto sys_status $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "$(SCAN)")
+        field(FLNK, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout")
+}
+
+# Updates system status records when $(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus updates
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout")
+{
+	field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):NonZeroStandbyStatus")
+	field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LineLockAcquired")
+	field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LaserEnabled")
+	field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):UncalibratedWarning")
+	field(LNK5, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):TestFaultWarning")
+	field(LNK6, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout2")
+}
+
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout2")
+{
+	field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CellWarmUp")
+	field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):PressureCalibrationMode")
+	field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):MemoryFailure")
+	field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):EepromFailure")
+	field(LNK5, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):WatchdogTimeout")
+	field(LNK6, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout3")
+}
+
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatusFanout3")
+{
+        field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):InvalidO2Computation")
+        field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowReferenceSignal")
+        field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CellNullBalance")
+        field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LaserTempControl")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):NonZeroStandbyStatus")
+{
+	field(DESC, "Non-zero standby status")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B0")
+	field(ZNAM, "Zero")
+	field(ONAM, "Non Zero")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LineLockAcquired")
+{
+        field(DESC, "Line lock acq (system ready)")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B1")
+        field(ZNAM, "Not Acquired")
+        field(ONAM, "Acquired")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LaserEnabled")
+{
+        field(DESC, "Off until laser temp stabiliz")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B2")
+        field(ZNAM, "Disabled")
+        field(ONAM, "Enabled")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):UncalibratedWarning")
+{
+        field(DESC, "Set if curr calib is invalid")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B4")
+        field(ZNAM, "No Warning")
+        field(ONAM, "Warning!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):TestFaultWarning")
+{
+        field(DESC, "Disables laser inhibits temp")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B5")
+        field(ZNAM, "No Warning")
+        field(ONAM, "Warning!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CellWarmUp")
+{
+        field(DESC, "Set while cell warming up")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B6")
+        field(ZNAM, "Warmed")
+        field(ONAM, "Warming up")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):PressureCalibrationMode")
+{
+        field(DESC, "Set while press calib is actv")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B7")
+        field(ZNAM, "Inactive")
+        field(ONAM, "Active")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):MemoryFailure")
+{
+        field(DESC, "Memory checksum failure")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B8")
+        field(ZNAM, "No failure")
+        field(ONAM, "Failure!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):EepromFailure")
+{
+        field(DESC, "EEPROM signature failure")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.B9")
+        field(ZNAM, "No failure")
+        field(ONAM, "Failure!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):WatchdogTimeout")
+{
+        field(DESC, "Watchdog timeout")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.BA")
+        field(ZNAM, "No timeout")
+        field(ONAM, "Timeout!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):InvalidO2Computation")
+{
+        field(DESC, "Invalid O2 computation error")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.BB")
+        field(ZNAM, "Valid")
+        field(ONAM, "Invalid!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowReferenceSignal")
+{
+        field(DESC, "Low reference signal level")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.BC")
+        field(ZNAM, "High")
+        field(ONAM, "Low")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CellNullBalance")
+{
+        field(DESC, "Cell null balance failure")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.BD")
+        field(ZNAM, "No failure")
+        field(ONAM, "Failure!")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LaserTempControl")
+{
+        field(DESC, "Laser temp control failure")
+        field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SystemStatus.BE")
+        field(ZNAM, "No failure")
+        field(ONAM, "Failure!")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CellTemp")
+{
+	field(DESC, "Cell Temperature")
+        field(INP, "@MO2i.proto cell_temp $(PORT)")
+	field(DTYP, "stream")
+	field(SCAN, "I/O Intr")
+	field(EGU, "deg C")
+	field(ASLO, "0.01")
+	field(LINR, "LINEAR")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SampleFlow")
+{
+	field(DESC, "Sample flow rate")
+        field(INP, "@MO2i.proto flow_rate $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+        field(EGU, "ml/min")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CO2MeasPct")
+{
+	field(DESC, "CO2 Measurement pct")
+        field(INP, "@MO2i.proto co2_pct $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+}
+
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):ChannelIndex")
+{
+	field(DESC, "Multiplexer channel index")
+        field(INP, "@MO2i.proto chan_index $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):Channel0O2")
+{
+	field(DESC, "Channel 0 O2 percentage")
+        field(INP, "@MO2i.proto chann0 $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "$(SCAN)")
+	field(EGU, "%")
+	field(ASLO, "0.01")
+	field(LINR, "LINEAR")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):Channel1O2")
+{
+	field(DESC, "Channel 1 O2 percentage")
+        field(INP, "@MO2i.proto chann1 $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+        field(EGU, "%")
+	field(ASLO, "0.01")
+	field(LINR, "LINEAR")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):Channel2O2")
+{
+	field(DESC, "Channel 2 O2 percentage")
+        field(INP, "@MO2i.proto chann2 $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+        field(EGU, "%")
+	field(ASLO, "0.01")
+	field(LINR, "LINEAR")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):Channel3O2")
+{
+	field(DESC, "Channel 3 O2 percentage")
+        field(INP, "@MO2i.proto chann3 $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+        field(EGU, "%")
+	field(ASLO, "0.01")
+	field(LINR, "LINEAR")
+}
+
+# Read 2 bytes containing 15 alarm status
+record(mbbiDirect, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus")
+{
+        field(DESC, "Read alarm status bytes")
+        field(INP, "@MO2i.proto alarm_status $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+        field(FLNK, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout")
+}
+
+# Updates alarm status records when $(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus updates
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout")
+{
+	field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowO2AlarmA")
+	field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighO2AlarmA")
+	field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowO2AlarmB")
+	field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighO2AlarmB")
+	field(LNK5, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowCO2AlarmA")
+	field(LNK6, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout2")
+}
+
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout2")
+{
+	field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighCO2AlarmA")
+	field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowCO2AlarmB")
+	field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighCO2AlarmB")
+	field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSupplyVoltAlarm")
+	field(LNK5, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSampleFlowAlarm")
+	field(LNK6, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout3")
+}
+
+record(fanout, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatusFanout3")
+{
+        field(LNK1, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighSampleFlowAlarm")
+        field(LNK2, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSamplePAlarm")
+        field(LNK3, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighSamplePAlarm")
+        field(LNK4, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CriticalSelfTestAlarm")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowO2AlarmA")
+{
+	field(DESC, "Low O2 Alarm A")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B0")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighO2AlarmA")
+{
+	field(DESC, "High O2 Alarm A")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B1")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowO2AlarmB")
+{
+	field(DESC, "Low O2 Alarm B")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B2")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighO2AlarmB")
+{
+	field(DESC, "High O2 Alarm B")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B3")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowCO2AlarmA")
+{
+	field(DESC, "Low CO2 Alarm A")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B4")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighCO2AlarmA")
+{
+	field(DESC, "High CO2 Alarm A")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B5")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowCO2AlarmB")
+{
+	field(DESC, "Low CO2 Alarm B")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B6")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighCO2AlarmB")
+{
+	field(DESC, "High CO2 Alarm B")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B7")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSupplyVoltAlarm")
+{
+	field(DESC, "Low supply voltage")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B8")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSampleFlowAlarm")
+{
+	field(DESC, "Low sample flow rate")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.B9")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighSampleFlowAlarm")
+{
+	field(DESC, "High sample flow rate")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.BA")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):LowSamplePAlarm")
+{
+	field(DESC, "Low sample cell pressure")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.BB")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):HighSamplePAlarm")
+{
+	field(DESC, "High sample cell pressure")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.BC")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
+
+record(bi, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CriticalSelfTestAlarm")
+{
+	field(DESC, "Critical self test failure")
+	field(INP, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):AlarmStatus.BE")
+	field(ZNAM, "Off")
+	field(ONAM, "On")
+}
