@@ -3,7 +3,7 @@
 #       EPICS prefix. Every PV for this device starts with this prefix.
 #       DEVICE can be used to define a free format prefix. If you want to stay
 #       with LCLS II naming conventions you can use PRIM as the Device Type,
-#       LOCA, as the Area, and UNIT as the numeric position inside area.   
+#       LOCA, as the Area, and UNIT as the numeric position inside area.
 #   SCAN
 #       Rate at which to query often changing values such as
 #       current measurement, status, statistics, etc.
@@ -186,6 +186,22 @@ record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):CO2MeasPct")
 {
 	field(DESC, "CO2 Measurement pct")
         field(INP, "@MO2i.proto co2_pct $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):SupplyV")
+{
+	field(DESC, "Voltage Supply")
+        field(INP, "@MO2i.proto v_supply $(PORT)")
+        field(DTYP, "stream")
+        field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(DEVICE=$(PRIM):$(LOCA):$(UNIT)):PumpDrive")
+{
+	field(DESC, "Pump Flow Rate")
+        field(INP, "@MO2i.proto pump_drv $(PORT)")
         field(DTYP, "stream")
         field(SCAN, "I/O Intr")
 }

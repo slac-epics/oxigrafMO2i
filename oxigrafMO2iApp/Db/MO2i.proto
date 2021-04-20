@@ -8,12 +8,12 @@ WriteTimeout  =  100;
 # brings one parameter, while the command R brings up to 8. We decided to use
 # R because we can bring all info needed with just 2 writings to the device.
 # With this strategy, the I/O Intr SCAN mode is used in almost all records. A
-# care must be taken: don't use the command R with the same number of 
+# care must be taken: don't use the command R with the same number of
 # arguments. Example: if you want to bring 10 parameters, use R to bring 6
 # and 4 parameters, but never 5 and 5. This is because the Stream Device will
 # never know how to rout the parameter to the correct receiver, as the data
 # types are identical for every parameter.
-# 
+#
 # Here we defined 2 groups of commands. In the case where more parameters need
 # to be retrieved, rebalance them accordingly.
 
@@ -23,38 +23,50 @@ WriteTimeout  =  100;
 # sys_status is the first parameter in the group 1 sequence.
 sys_status
 {
-        out ESC "R0,3,4,6,9,29";
-	in "R:%7d,%*7d,%*7d,%*7d,%*7d,%*7d";       
+        out ESC "R0,3,4,6,9,26,27,29";
+	in "R:%7d,%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%*7d";
 }
 
 # cell_temp is the second parameter in the sequence (group 1).
 cell_temp
 {
-        in "R:%*7d,%7d,%*7d,%*7d,%*7d,%*7d";
+        in "R:%*7d,%7d,%*7d,%*7d,%*7d,%*7d,%*7d,%*7d";
 }
 
 # flow_rate is the third parameter in the sequence (group 1).
 flow_rate
 {
-        in "R:%*7d,%*7d,%7d,%*7d,%*7d,%*7d";
+        in "R:%*7d,%*7d,%7d,%*7d,%*7d,%*7d,%*7d,%*7d";
 }
 
 # alarm_status is the fourth parameter in the sequence (group 1).
 alarm_status
 {
-        in "R:%*7d,%*7d,%*7d,%7d,%*7d,%*7d";
+        in "R:%*7d,%*7d,%*7d,%7d,%*7d,%*7d,%*7d,%*7d";
 }
 
 # co2_pct is the fifth parameter in the sequence (group 1).
 co2_pct
 {
-        in "R:%*7d,%*7d,%*7d,%*7d,%7d,%*7d";
+        in "R:%*7d,%*7d,%*7d,%*7d,%7d,%*7d,%*7d";
+}
+
+# v_supply is the fifth parameter in the sequence (group 1).
+v_supply
+{
+        in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%7d,%*7d,%*7d";
+}
+
+# pump_drv is the fifth parameter in the sequence (group 1).
+pump_drv
+{
+        in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%7d,%*7d";
 }
 
 # port_index is the sixth parameter in the sequence (group 1).
 chan_index
 {
-        in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%7d";
+        in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%7d";
 }
 
 ###### GROUP 2
