@@ -1,3 +1,11 @@
+R1.0.0		Marcio Donadio - 2021-04-23
+                - Calling it version R1.0.0 as is was already tested in
+                  production systems.
+		- Adding 2 more values to read back: Supply voltage and pump
+                  drive rate (Garth Brown).
+                - Adding manufacturer's protocol docs for reference (Garth 
+                  Brown).
+
 R0.1.1          Change example IOC to use updated versions of asyn and streamdevice
 
 R0.1.0		Marcio Donadio - 2017-10-29
