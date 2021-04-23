@@ -51,19 +51,19 @@ co2_pct
         in "R:%*7d,%*7d,%*7d,%*7d,%7d,%*7d,%*7d";
 }
 
-# v_supply is the fifth parameter in the sequence (group 1).
+# v_supply is the sixth parameter in the sequence (group 1).
 v_supply
 {
         in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%7d,%*7d,%*7d";
 }
 
-# pump_drv is the fifth parameter in the sequence (group 1).
+# pump_drv is the seventh parameter in the sequence (group 1).
 pump_drv
 {
         in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%7d,%*7d";
 }
 
-# port_index is the sixth parameter in the sequence (group 1).
+# port_index is the eighth parameter in the sequence (group 1).
 chan_index
 {
         in "R:%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%*7d,%7d";
